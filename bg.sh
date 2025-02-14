@@ -1,17 +1,23 @@
 #!/bin/bash
 
-current=$HOME/bin/bg/bgtmp.txt
+bg_url=$HOME/bin/bg/bgtmp.txt
 myphotos=$HOME/bin/bg/my_photos.txt
 
-randpic=$(shuf -n 1 $myphotos)
-echo "$randpic" > $current
 
 bg() {
-	feh --bg-max $randpic
+	randpic=$(shuf -n 1 "$myphotos")
+	echo "$randpic" > "$bg_url"
+	feh --bg-max "$randpic"
 }
 
 bg_remove() {
-	grep -vFf "$current" $myphotos > temp.txt && mv temp.txt $myphotos
+	if [ -s "$bg_url" ]; then
+		grep -vFf "$bg_url" "$myphotos" > temp.txt && mv temp.txt "$myphotos"
+		echo "removed $bg_url"
+	else
+		echo "$bg_url is empty"
+		exit 1
+	fi
 }
 
 if [[ $# -eq 0 ]]; then
