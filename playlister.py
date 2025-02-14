@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-#A script to make a playlist from an open audacity project. The script lists the name of each file in the project.    
+#Lists the files used in an open Audacity project.
+
 import os
 import sys
 import json
@@ -18,21 +19,18 @@ else:
 
 # Make sure pipes exist
 if not os.path.exists(TONAME):
-    #print(" ..does not exist.  Ensure Audacity is running with mod-script-pipe.")
+    print("Exiting. Ensure Audacity is running with mod-script-pipe.")
     sys.exit()
 
 if not os.path.exists(FROMNAME):
-    #print(" ..does not exist.  Ensure Audacity is running with mod-script-pipe.")
+    print("Exiting. Ensure Audacity is running with mod-script-pipe.")
     sys.exit()
-
-#print("-- Both pipes exist.  Good.")
 
 TOFILE = open(TONAME, 'w')
 FROMFILE = open(FROMNAME, 'rt')
 
 def send_command(command):
     """Send a single command to Audacity."""
-    #print("Send: >>> \n" + command)
     TOFILE.write(command + EOL)
     TOFILE.flush()
 
@@ -65,10 +63,6 @@ def list_tracks():
         tracks = json.loads(clean_response)
         for track in tracks:
             print(track["name"])
-        #with open('playlist.txt', 'w') as file:
-            # Extract and print track names
-        #    for track in tracks:
-        #        file.write(track["name"] + "\n")
 
     except json.JSONDecodeError:
         print("Failed to decode JSON response.")
