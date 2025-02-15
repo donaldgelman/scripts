@@ -1,9 +1,12 @@
 #!/bin/python3
 
+#https://github.com/mpv-player/mpv/blob/master/DOCS/edl-mpv.rst#syntax-of-mpv-edl-files
+
 import os
 import random
 import subprocess
-import csv
+
+home_dir = os.environ['HOME']
 
 def get_video_duration(video_path):
     try:
@@ -29,18 +32,19 @@ def generate_edl(folder, duration, repetitions):
                 byte_length = len(video.encode('utf-8'))
                 entry = f'%{byte_length}%{video},start={start},length={duration}'
                 edl_content.append(entry)
-
-    with open('/home/donaldgelman/bin/tmp/vidcycle.mpv.edl', 'w') as edl_file:
+    edl_path = os.path.join(home_dir, 'bin', 'tmp', 'vidcycle.mpv.edl')
+    with open(edl_path, 'w') as edl_file:
         edl_file.write('\n'.join(edl_content))
 
-    print(f"EDL file written to: /home/donaldgelman/bin/tmp/vidcycle.mpv.edl")
+    print(f"EDL file written to: {edl_path}")
+    return edl_path
 
 if __name__ == "__main__":
     folder = input("Enter the video folder path: ")
     duration = int(input("Enter the clip duration in seconds: "))
     repetitions = int(input("Enter the number of repetitions: "))
     
-    generate_edl(folder, duration, repetitions)
+    edl_path = generate_edl(folder, duration, repetitions)
     
     # Run mpv with the generated EDL file
-    subprocess.run(['mpv', '--no-audio', '--loop=yes', '--really-quiet', '/home/donaldgelman/bin/tmp/vidcycle.mpv.edl'])
+    subprocess.run(['mpv', '--no-audio', '--loop=yes', '--really-quiet', edl_path])

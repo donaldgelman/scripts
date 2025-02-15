@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #cycles $3 times through randomly selected clips of given duration ($2) of all videos in a given folder ($1)
+#https://github.com/mpv-player/mpv/blob/master/DOCS/edl-mpv.rst#syntax-of-mpv-edl-files
 
 folder=$1
 vidcycle=$HOME/bin/tmp/vidcycle.txt
