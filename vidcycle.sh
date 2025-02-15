@@ -16,14 +16,13 @@ start_vidcycle () {
 
 while read line ; do
 	length=$(ffprobe -v fatal -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$line" | awk 'BEGIN {FS="."}{print $1}')
-	echo $line,$length >> /$HOME/bin/tmp/vidcycle_duration.csv
 	start=$(shuf -i 0-$length -n 1)
-	echo $line,$start,$duration >> $HOME/bin/tmp/vidcycle.mpv.edl
-done < $HOME/bin/tmp/vidcycle.txt
+	byte_length=$(echo -n "$line" | wc -c)
+	escaped_line=$(echo "$line" | sed 's/\\/\\\\/g')
+	echo "%$byte_length%$escaped_line,start=$start,length=$duration" >> "$HOME/bin/tmp/vidcycle.mpv.edl"
+done < "$vidcycle"
 }
 
 for i in $(seq $repetitions); do start_vidcycle; done
-
-sed -i '/,,/d' $HOME/bin/tmp/vidcycle.mpv.edl
 
 mpv --no-audio --loop=yes --really-quiet $HOME/bin/tmp/vidcycle.mpv.edl 
