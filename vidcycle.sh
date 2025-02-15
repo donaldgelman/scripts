@@ -16,11 +16,18 @@ echo "# mpv EDL v0" > "$edl_file"
 start_vidcycle () {
 
 find $folder -type f \( -iname "*.mp4" -o -iname "*.webm" -o -iname "*.mkv" -o -iname "*.avi" \) | shuf | while IFS= read -r line ; do
-	length=$(ffprobe -v fatal -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$line" | awk 'BEGIN {FS="."}{print $1}')
-	start=$(shuf -i 0-"$length" -n 1)
-	byte_length=$(echo -n "$line" | wc -c)
-	escaped_line=$(echo "$line" | sed 's/\\/\\\\/g')
-	echo "%$byte_length%$escaped_line,start=$start,length=$duration" >> "$edl_file"
+	if length=$(ffprobe -v fatal -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$line" | awk 'BEGIN {FS="."}{print $1}') ; then
+		if [ -n "$length" ]; then	
+			start=$(shuf -i 0-"$length" -n 1)
+			byte_length=$(echo -n "$line" | wc -c)
+			escaped_line=$(echo "$line" | sed 's/\\/\\\\/g')
+			echo "%$byte_length%$escaped_line,start=$start,length=$duration" >> "$edl_file"
+		else
+			echo "Warning: File $line has an invalid or missing duration, skipping." >&2
+		fi
+	else
+		echo "Warning: Failed to probe file $line, skipping." >&2
+	fi
 done
 }
 
